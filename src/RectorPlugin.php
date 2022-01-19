@@ -17,7 +17,7 @@ use Composer\Plugin\PluginInterface;
  * @inspiration https://github.com/rectorphp/extension-installer/blob/89e2519dc01c4350829812925e0f674dcb310425/src/PluginInstaller.php#L16
  * https://github.com/cweagans/composer-patches/blob/master/src/Plugin/Patches.php
  */
-final class Plugin implements PluginInterface, EventSubscriberInterface
+final class RectorPlugin implements PluginInterface, EventSubscriberInterface
 {
     public function activate(Composer $composer, IOInterface $io): void
     {

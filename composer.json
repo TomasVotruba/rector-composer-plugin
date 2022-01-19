@@ -39,7 +39,7 @@
         }
     ],
     "extra": {
-        "class": "Rector\\ComposerPlugin\\Plugin",
+        "class": "Rector\\ComposerPlugin\\RectorPlugin",
         "branch-alias": {
             "dev-main": "0.11.x-dev"
         }
