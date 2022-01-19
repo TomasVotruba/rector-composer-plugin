@@ -22,7 +22,7 @@ jobs:
                     php-version: 8.0
 
             # locks to provided Symfony 5.0.*
-            -   run: composer install --no-interaction --no-progress --ansi
+            -   run: composer update --no-interaction --no-progress --ansi
 
             # new package → should invoke update of package even
             -   run: composer require symfony/console 6.0 --ansi
