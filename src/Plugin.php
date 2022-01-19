@@ -30,7 +30,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
             return;
         }
 
-        $io->write('Creating <info>rector.php</info> file');
+        $io->write('  - Creating <info>rector.php</info> file');
 
         // @todo create dummy rector.php file based on PHP version
         file_put_contents($rectorConfigFilePath, '<?php // rector config' . PHP_EOL);
