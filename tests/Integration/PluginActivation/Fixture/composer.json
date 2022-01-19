@@ -1,13 +1,18 @@
 {
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.1",
         "rector/composer-plugin": "dev-main"
     },
     "repositories": [
         {
             "type": "path",
             "version": "dev-main",
-            "url": "../"
+            "url": "../../../../"
         }
-    ]
+    ],
+    "config": {
+        "allow-plugins": {
+            "rector/composer-plugin": true
+        }
+    }
 }

@@ -1,0 +1,21 @@
+{
+    "require": {
+        "php": ">=7.1",
+        "symfony/console": "5.0.*"
+    },
+    "require-dev": {
+        "rector/composer-plugin": "dev-main"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "version": "dev-main",
+            "url": "../../"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "rector/composer-plugin": true
+        }
+    }
+}

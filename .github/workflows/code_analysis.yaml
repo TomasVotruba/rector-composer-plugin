@@ -1,0 +1,41 @@
+# inspired at https://github.com/phpstan/extension-installer/blob/master/.github/workflows/integration-tests.yml
+name: Code Analysis
+
+on: [push, pull_request]
+
+env:
+    # see https://github.com/composer/composer/issues/9368#issuecomment-718112361
+    COMPOSER_ROOT_VERSION: "dev-main"
+
+jobs:
+    code_analysis:
+        strategy:
+            fail-fast: false
+            matrix:
+                actions:
+                    -
+                        name: 'Composer Validate'
+                        run: composer validate --ansi
+
+                    -
+                        name: 'PHPStan'
+                        run: vendor/bin/phpstan analyse --ansi
+
+                    -
+                        name: 'ECS'
+                        run: vendor/bin/ecs check --ansi
+
+        runs-on: ubuntu-latest
+
+        steps:
+            -
+                uses: actions/checkout@v2
+
+            -
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.0
+
+            -   uses: "ramsey/composer-install@v1"
+
+            -   run: ${{ matrix.actions.run }}

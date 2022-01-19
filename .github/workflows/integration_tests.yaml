@@ -1,5 +1,5 @@
 # inspired at https://github.com/phpstan/extension-installer/blob/master/.github/workflows/integration-tests.yml
-name: Composer Update
+name: Integration Tests
 
 on: [push, pull_request]
 
@@ -8,7 +8,7 @@ env:
     COMPOSER_ROOT_VERSION: "dev-main"
 
 jobs:
-    composer_update:
+    integration_tests:
         runs-on: ubuntu-latest
 
         steps:
@@ -20,11 +20,6 @@ jobs:
                 with:
                     php-version: 8.0
 
-            -
-                run: composer install --no-interaction --no-progress
-                working-directory: e2e
+            -   uses: "ramsey/composer-install@v1"
 
-            # this must run without error and show 1 diff, or the rector/rector-nette config was not registered propperly
-            -
-                run: composer update
-                working-directory: e2e
+            -   run: vendor/bin/phpunit tests/Integration
