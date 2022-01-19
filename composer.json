@@ -1,0 +1,20 @@
+{
+    "name": "rector/composer-plugin",
+    "type": "composer-plugin",
+    "license": "proprietary",
+    "require": {
+        "php": ">=7.1",
+        "composer-plugin-api": "^1.1 || ^2.0"
+    },
+    "require-dev": {
+        "composer/composer": "^2.0",
+        "composer/xdebug-handler": "^2.0",
+        "symplify/easy-coding-standard": "^10.0.10",
+        "symplify/phpstan-extensions": "^10.0.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rector\\RectorComposerPlugin\\": "src"
+        }
+    }
+}
