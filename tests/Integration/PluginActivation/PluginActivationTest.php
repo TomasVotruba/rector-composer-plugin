@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Rector\ComposerPlugin\Tests\Integration\PluginActivation;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Filesystem\Filesystem;
+use Rector\ComposerPlugin\Tests\Integration\AbstractComposerPluginRunTestCase;
 
 /**
  * @inspiration https://github.com/pyrech/composer-changelogs/blob/main/tests/ChangelogsPluginTest.php
  */
-final class PluginActivationTest extends TestCase
+final class PluginActivationTest extends AbstractComposerPluginRunTestCase
 {
     /**
      * @var string
@@ -19,14 +18,7 @@ final class PluginActivationTest extends TestCase
 
     protected function tearDown(): void
     {
-        $filesystem = new Filesystem();
-
-        // remove files created by composer
-        $filesystem->remove([
-            self::TARGET_DIRECTORY . '/vendor',
-            self::TARGET_DIRECTORY . '/composer.lock',
-            self::TARGET_DIRECTORY . '/rector.php',
-        ]);
+        $this->cleanDirectory(self::TARGET_DIRECTORY);
     }
 
     public function testCreateRectorConfig(): void
@@ -38,11 +30,5 @@ final class PluginActivationTest extends TestCase
         $this->assertFileExists(self::TARGET_DIRECTORY . '/rector.php');
 
         // @todo assert rector.php content
-    }
-
-    private function runComposerInstallWithDirectory(string $directory): void
-    {
-        $commandLine = sprintf('composer install --working-dir %s --quiet', $directory);
-        exec($commandLine);
     }
 }
