@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rector\ComposerPlugin\RectorConfigGenerator;
 
+use Rector\ComposerPlugin\Version\PhpVersionFactory;
 use Symplify\SmartFileSystem\SmartFileSystem;
 
 /**
@@ -16,9 +17,15 @@ final class RectorConfigGenerator
      */
     private $smartFileSystem;
 
+    /**
+     * @var PhpVersionFactory
+     */
+    private $phpVersionFactory;
+
     public function __construct()
     {
         $this->smartFileSystem = new SmartFileSystem();
+        $this->phpVersionFactory = new PhpVersionFactory();
     }
 
     /**
@@ -32,8 +39,26 @@ final class RectorConfigGenerator
     ): string {
         $bareRectorTemplate = __DIR__ . '/../../templates/rector.php.dist';
 
-        $smartFileContents = $this->smartFileSystem->readFile($bareRectorTemplate);
+        $templateFileContents = $this->smartFileSystem->readFile($bareRectorTemplate);
 
-        return $smartFileContents;
+        $packagesToSetConstants = [
+            'php' => ['Rector\Set\ValueObject\SetList', 'PHP']
+        ];
+
+
+        $setConstant = $packagesToSetConstants[$package] ?? null;
+        if ($setConstant !== null) {
+            // @todo complete all PHP versions?
+            $oldVersionInt = $this->phpVersionFactory->createIntVersion($oldVersion);
+            $newVersionInt = $this->phpVersionFactory->createIntVersion($newVersion);
+
+            $setReference = $setConstant[0] . '::' . $setConstant[1] . '_' . $newVersionInt;
+
+            $setImportsContent = '$containerConfigurator->import(\\' . $setReference . ');';
+
+            return str_replace('__SET_IMPORTS__', $setImportsContent, $templateFileContents);
+        }
+
+        return $templateFileContents;
     }
 }

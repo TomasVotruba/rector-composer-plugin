@@ -14,7 +14,5 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     ]);
 
     // Define what sets should be applied
-    $containerConfigurator->import(LevelSetList::UP_TO_PHP___PHP_VERSION__);
-
-    __IMPORT_LEVEL_FRAMEWORK__
+    __SET_IMPORTS__
 };
