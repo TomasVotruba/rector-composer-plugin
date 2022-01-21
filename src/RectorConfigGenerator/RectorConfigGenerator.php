@@ -12,6 +12,9 @@ use Symplify\SmartFileSystem\SmartFileSystem;
  */
 final class RectorConfigGenerator
 {
+    const PACKAGES_TO_SET_CONSTANTS = [
+        'php' => ['Rector\Set\ValueObject\SetList', 'PHP'],
+    ];
     /**
      * @var SmartFileSystem
      */
@@ -41,23 +44,29 @@ final class RectorConfigGenerator
 
         $templateFileContents = $this->smartFileSystem->readFile($bareRectorTemplate);
 
-        $packagesToSetConstants = [
-            'php' => ['Rector\Set\ValueObject\SetList', 'PHP'],
-        ];
+        $setImportsContent = $this->createSetImportsContent($package, $oldVersion, $newVersion);
 
-        $setConstant = $packagesToSetConstants[$package] ?? null;
-        if ($setConstant !== null) {
-            // @todo complete all PHP versions?
-            $oldVersionInt = $this->phpVersionFactory->createIntVersion($oldVersion);
-            $newVersionInt = $this->phpVersionFactory->createIntVersion($newVersion);
+        return str_replace('__SET_IMPORTS__', $setImportsContent, $templateFileContents);
+    }
 
-            $setReference = $setConstant[0] . '::' . $setConstant[1] . '_' . $newVersionInt;
-
-            $setImportsContent = '$containerConfigurator->import(\\' . $setReference . ');';
-
-            return str_replace('__SET_IMPORTS__', $setImportsContent, $templateFileContents);
+    private function createSetImportsContent(string $packageName, string $oldVersion, string $newVersion): string
+    {
+        $setConstant = self::PACKAGES_TO_SET_CONSTANTS[$packageName] ?? null;
+        if ($setConstant === null) {
+            return '';
         }
 
-        return $templateFileContents;
+        $setImportsContent = '';
+
+        // @todo complete all PHP versions?
+        $oldVersionInt = $this->phpVersionFactory->createIntVersion($oldVersion);
+        $newVersionInt = $this->phpVersionFactory->createIntVersion($newVersion);
+
+        $setReference = $setConstant[0] . '::' . $setConstant[1] . '_' . $newVersionInt;
+
+        $setImportsContent .= '$containerConfigurator->import(\\' . $setReference . ');' . PHP_EOL;
+
+        // remove extra new line on the right
+        return rtrim($setImportsContent);
     }
 }
