@@ -20,6 +20,6 @@ final class PhpVersionFactory
             return (int) $explodeVersion[0] * 10 + (int) $explodeVersion[1];
         }
 
-        return (int)$version;
+        return (int) $version;
     }
 }

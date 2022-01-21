@@ -42,9 +42,8 @@ final class RectorConfigGenerator
         $templateFileContents = $this->smartFileSystem->readFile($bareRectorTemplate);
 
         $packagesToSetConstants = [
-            'php' => ['Rector\Set\ValueObject\SetList', 'PHP']
+            'php' => ['Rector\Set\ValueObject\SetList', 'PHP'],
         ];
-
 
         $setConstant = $packagesToSetConstants[$package] ?? null;
         if ($setConstant !== null) {

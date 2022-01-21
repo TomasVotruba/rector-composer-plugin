@@ -25,7 +25,8 @@ final class RectorConfigGeneratorTest extends TestCase
         $rectorConfigContent = $this->rectorConfigGenerator->generate([__DIR__ . '/Fixture'], 'php', '7.4', '8.0');
 
         $this->assertStringEqualsFile(
-            __DIR__ . '/Fixture/expected_php_rector_config_content.php', $rectorConfigContent
+            __DIR__ . '/Fixture/expected_php_rector_config_content.php',
+            $rectorConfigContent
         );
     }
 }
