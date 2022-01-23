@@ -5,16 +5,21 @@
     "license": "proprietary",
     "require": {
         "php": ">=7.1",
-        "composer-plugin-api": "^1.1 || ^2.0"
+        "composer-plugin-api": "^1.1 || ^2.0",
+        "nette/utils": "^3.1",
+        "nikic/php-parser": "^4.13",
+        "webmozart/assert": "^1.9"
     },
     "require-dev": {
         "composer/composer": "2.2",
         "composer/xdebug-handler": "^2.0",
         "symplify/easy-coding-standard": "^10.0",
-        "symplify/phpstan-extensions": "^10.0.10",
         "phpstan/phpstan": "^1.4",
         "phpunit/phpunit": "^9.5",
-        "tracy/tracy": "^2.9"
+        "tracy/tracy": "^2.7",
+        "rector/rector": "^0.12.13",
+        "phpstan/phpstan-webmozart-assert": "^1.0",
+        "phpstan/extension-installer": "^1.1"
     },
     "autoload": {
         "psr-4": {
@@ -42,6 +47,11 @@
         "class": "Rector\\ComposerPlugin\\RectorPlugin",
         "branch-alias": {
             "dev-main": "0.11.x-dev"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
         }
     }
 }

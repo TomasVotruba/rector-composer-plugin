@@ -4,31 +4,36 @@ declare(strict_types=1);
 
 namespace Rector\ComposerPlugin\RectorConfigGenerator;
 
-use Rector\ComposerPlugin\Version\PhpVersionFactory;
-use Symplify\SmartFileSystem\SmartFileSystem;
+use Nette\Utils\FileSystem;
+use Rector\ComposerPlugin\RectorConfigGenerator\ContentGenerator\PathsContentGenerator;
+use Rector\ComposerPlugin\RectorConfigGenerator\ContentGenerator\SetListContentGenerator;
+use Rector\ComposerPlugin\ValueObject\PackageVersionChange;
+use Webmozart\Assert\Assert;
 
 /**
  * @see \Rector\ComposerPlugin\Tests\RectorConfigGenerator\RectorConfigGeneratorTest
  */
 final class RectorConfigGenerator
 {
-    const PACKAGES_TO_SET_CONSTANTS = [
-        'php' => ['Rector\Set\ValueObject\SetList', 'PHP'],
-    ];
     /**
-     * @var SmartFileSystem
+     * @var string
      */
-    private $smartFileSystem;
+    private const RECTOR_CONFIG_TEMPLATE = __DIR__ . '/../../templates/rector.php.dist';
 
     /**
-     * @var PhpVersionFactory
+     * @var PathsContentGenerator
      */
-    private $phpVersionFactory;
+    private $pathsContentGenerator;
+
+    /**
+     * @var SetListContentGenerator
+     */
+    private $setListContentGenerator;
 
     public function __construct()
     {
-        $this->smartFileSystem = new SmartFileSystem();
-        $this->phpVersionFactory = new PhpVersionFactory();
+        $this->setListContentGenerator = new SetListContentGenerator();
+        $this->pathsContentGenerator = new PathsContentGenerator();
     }
 
     /**
@@ -40,33 +45,22 @@ final class RectorConfigGenerator
         string $oldVersion,
         string $newVersion
     ): string {
-        $bareRectorTemplate = __DIR__ . '/../../templates/rector.php.dist';
+        Assert::allString($paths);
 
-        $templateFileContents = $this->smartFileSystem->readFile($bareRectorTemplate);
+        $templateFileContents = FileSystem::read(self::RECTOR_CONFIG_TEMPLATE);
 
-        $setImportsContent = $this->createSetImportsContent($package, $oldVersion, $newVersion);
+        $packageVersionChange = new PackageVersionChange($package, $oldVersion, $newVersion);
 
-        return str_replace('__SET_IMPORTS__', $setImportsContent, $templateFileContents);
-    }
+        $setConstantVersion = $this->setListContentGenerator->resolveValues($packageVersionChange);
+        $setImportsContent = $this->setListContentGenerator->generateContent($setConstantVersion);
 
-    private function createSetImportsContent(string $packageName, string $oldVersion, string $newVersion): string
-    {
-        $setConstant = self::PACKAGES_TO_SET_CONSTANTS[$packageName] ?? null;
-        if ($setConstant === null) {
-            return '';
+        $templateFileContents = str_replace($this->setListContentGenerator->getMaskName(), $setImportsContent, $templateFileContents);
+
+        if ($paths !== []) {
+            $pathsContent = $this->pathsContentGenerator->generateContent($paths);
+            $templateFileContents = str_replace($this->pathsContentGenerator->getMaskName(), $pathsContent, $templateFileContents);
         }
 
-        $setImportsContent = '';
-
-        // @todo complete all PHP versions?
-        $oldVersionInt = $this->phpVersionFactory->createIntVersion($oldVersion);
-        $newVersionInt = $this->phpVersionFactory->createIntVersion($newVersion);
-
-        $setReference = $setConstant[0] . '::' . $setConstant[1] . '_' . $newVersionInt;
-
-        $setImportsContent .= '$containerConfigurator->import(\\' . $setReference . ');' . PHP_EOL;
-
-        // remove extra new line on the right
-        return rtrim($setImportsContent);
+        return $templateFileContents;
     }
 }

@@ -12,6 +12,7 @@ use Composer\Installer\PackageEvent;
 use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
+use Rector\ComposerPlugin\RectorConfigGenerator\RectorConfigGenerator;
 
 /**
  * @inspiration https://github.com/rectorphp/extension-installer/blob/89e2519dc01c4350829812925e0f674dcb310425/src/PluginInstaller.php#L16
@@ -19,6 +20,16 @@ use Composer\Plugin\PluginInterface;
  */
 final class RectorPlugin implements PluginInterface, EventSubscriberInterface
 {
+    /**
+     * @var RectorConfigGenerator
+     */
+    private $rectorConfigGenerator;
+
+    public function __construct()
+    {
+        $this->rectorConfigGenerator = new RectorConfigGenerator();
+    }
+
     public function activate(Composer $composer, IOInterface $io): void
     {
         $composerFile = Factory::getComposerFile();
@@ -38,10 +49,12 @@ final class RectorPlugin implements PluginInterface, EventSubscriberInterface
 
     public function deactivate(Composer $composer, IOInterface $io): void
     {
+        // not used
     }
 
     public function uninstall(Composer $composer, IOInterface $io): void
     {
+        // not used
     }
 
     public function postPackageUpdate(PackageEvent $packageEvent): void
@@ -52,11 +65,14 @@ final class RectorPlugin implements PluginInterface, EventSubscriberInterface
         }
 
         $completeInitialPackage = $updateOperation->getInitialPackage();
-        var_dump($completeInitialPackage->getName());
-        var_dump($completeInitialPackage->getVersion());
-
         $completeTargetPackage = $updateOperation->getTargetPackage();
-        var_dump($completeTargetPackage->getVersion());
+
+        $this->rectorConfigGenerator->generate(
+            [],
+            $packageEvent->getName(),
+            $completeInitialPackage->getVersion(),
+            $completeTargetPackage->getVersion()
+        );
     }
 
     /**
@@ -65,7 +81,8 @@ final class RectorPlugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            // invoked here https://github.com/composer/composer/blob/e6cfc924f24089bc02cf8f4d27367b283247610e/src/Composer/Installer/InstallationManager.php#L458
+            // this constant cannot be discovered anywhere
+            // as it is invoked magically here https://github.com/composer/composer/blob/e6cfc924f24089bc02cf8f4d27367b283247610e/src/Composer/Installer/InstallationManager.php#L458
             PackageEvents::POST_PACKAGE_UPDATE => 'postPackageUpdate',
         ];
     }

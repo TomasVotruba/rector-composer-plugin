@@ -1,0 +1,14 @@
+{
+    "require": {
+        "php": "7.1.*"
+    },
+    "require-dev": {
+        "rector/composer-plugin": "dev-main"
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git@github.com:rectorphp/composer-plugin.git"
+        }
+    ]
+}

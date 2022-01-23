@@ -1,0 +1,32 @@
+name: PHP 7.1 Install
+
+on: [push, pull_request]
+
+env:
+    # see https://github.com/composer/composer/issues/9368#issuecomment-718112361
+    COMPOSER_ROOT_VERSION: "dev-main"
+
+jobs:
+    php_71_install:
+        runs-on: ubuntu-latest
+
+        steps:
+            -
+                uses: actions/checkout@v2
+
+            -
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.1
+                    coverage: none
+
+            # override root composer.json with testing one
+            -   run: cp build/test-php71-install/composer.json composer.json
+
+            # see https://www.previousnext.com.au/blog/managing-composer-github-access-personal-access-tokens
+            - name: Add HTTP basic auth credentials for Private Composer Package
+              run: composer config -g github-oauth.github.com ${{ secrets.ACCESS_TOKEN }} --ansi
+
+            # add private package
+            -
+                run: composer update --ansi

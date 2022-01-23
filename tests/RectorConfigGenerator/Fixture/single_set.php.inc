@@ -8,9 +8,9 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters = $containerConfigurator->parameters();
     $parameters->set(Option::PATHS, [
-__PATHS__
+        __DIR__ . '/Fixture',
     ]);
 
     // Define what sets should be applied
-__SET_IMPORTS__
+    $containerConfigurator->import(\Rector\Set\ValueObject\SetList::PHP_80);
 };
