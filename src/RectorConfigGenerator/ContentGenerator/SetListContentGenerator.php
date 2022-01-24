@@ -96,7 +96,7 @@ final class SetListContentGenerator implements ConfigContentGeneratorInterface
             $stmts[] = new Expression($methodCall);
         }
 
-        return $this->indentAwarePrinter->prettyPrintWithIndent($stmts, 2);
+        return $this->indentAwarePrinter->prettyPrintWithIndent($stmts);
     }
 
     private function createClassConstFetch(SetConstantVersion $setConstantVersion): ClassConstFetch

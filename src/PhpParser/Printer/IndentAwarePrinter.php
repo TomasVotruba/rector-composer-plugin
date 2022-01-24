@@ -15,7 +15,7 @@ final class IndentAwarePrinter extends Standard
      */
     public function prettyPrintWithIndent(array $stmts): string
     {
-        Assert::allIsAOf(Stmt::class, $stmts);
+        Assert::allIsAOf($stmts, Stmt::class);
 
         $this->resetState();
         $this->preprocessNodes($stmts);
