@@ -7,10 +7,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 
 return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters = $containerConfigurator->parameters();
-    $parameters->set(Option::PATHS, [
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
-    ]);
+    $parameters->set(Option::PATHS, [__DIR__ . '/src', __DIR__ . '/tests']);
 
     // Define what sets should be applied
     $containerConfigurator->import(\Rector\Symfony\Set\SymfonySetList::SYMFONY_60);
