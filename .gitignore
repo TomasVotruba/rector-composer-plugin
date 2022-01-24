@@ -2,3 +2,5 @@
 composer.lock
 
 .phpunit.result.cache
+
+tests/Integration/PluginActivation/Fixture/vendor/

@@ -4,7 +4,15 @@ declare(strict_types=1);
 
 namespace Rector\ComposerPlugin\RectorConfigGenerator\ContentGenerator;
 
+use PhpParser\Node\Arg;
+use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Stmt\Expression;
 use Rector\ComposerPlugin\Contract\ConfigContentGeneratorInterface;
+use Rector\ComposerPlugin\PhpParser\Printer\IndentAwarePrinter;
 use Rector\ComposerPlugin\Repository\SetConstantRepository;
 use Rector\ComposerPlugin\ValueObject\PackageVersionChange;
 use Rector\ComposerPlugin\ValueObject\SetConstantVersion;
@@ -22,10 +30,16 @@ final class SetListContentGenerator implements ConfigContentGeneratorInterface
      */
     private $setConstantRepository;
 
+    /**
+     * @var IndentAwarePrinter
+     */
+    private $indentAwarePrinter;
+
     public function __construct()
     {
         $this->packageSagaResolver = new PackageSagaResolver();
         $this->setConstantRepository = new SetConstantRepository();
+        $this->indentAwarePrinter = new IndentAwarePrinter();
     }
 
     /**
@@ -66,17 +80,31 @@ final class SetListContentGenerator implements ConfigContentGeneratorInterface
      */
     public function generateContent(array $setConstantVersions): string
     {
-        $setImportsContent = '';
+        $stmts = [];
 
         foreach ($setConstantVersions as $setConstantVersion) {
-            $setConstant = $setConstantVersion->getSetConstant();
+            $classConstFetch = $this->createClassConstFetch($setConstantVersion);
 
-            $setReference = $setConstant[0] . '::' . $setConstant[1] . '_' . $setConstantVersion->getVersion();
+            $args = [new Arg($classConstFetch)];
 
-            $setImportsContent .= '    $containerConfigurator->import(\\' . $setReference . ');' . PHP_EOL;
+            $methodCall = new MethodCall(
+                new Variable('containerConfigurator'),
+                new Identifier('import'),
+                $args
+            );
+
+            $stmts[] = new Expression($methodCall);
         }
 
-        // remove extra new line on the right
-        return rtrim($setImportsContent);
+        return $this->indentAwarePrinter->prettyPrintWithIndent($stmts, 2);
+    }
+
+    private function createClassConstFetch(SetConstantVersion $setConstantVersion): ClassConstFetch
+    {
+        $setConstant = $setConstantVersion->getSetConstant();
+
+        $constIdentifier = new Identifier($setConstant[1] . '_' . $setConstantVersion->getVersion());
+
+        return new ClassConstFetch(new FullyQualified($setConstant[0]), $constIdentifier);
     }
 }
