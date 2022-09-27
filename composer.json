@@ -2,7 +2,7 @@
     "name": "rector/composer-plugin",
     "type": "composer-plugin",
     "description": "Detect package version changes and upgrade code on composer update",
-    "license": "proprietary",
+    "license": "MIT",
     "require": {
         "php": ">=7.1",
         "composer-plugin-api": "^1.1 || ^2.0",
